@@ -870,6 +870,7 @@ export default defineSchema({
 
   pokemonChampionsCustomers: defineTable({
     contactHandle: v.string(),
+    contactKey: v.optional(v.string()),
     contactType: v.union(
       v.literal("discord"),
       v.literal("whatsapp"),
@@ -887,6 +888,7 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index("by_contactHandle", ["contactHandle"])
+    .index("by_contactKey", ["contactKey"])
     .index("by_contactType", ["contactType"])
     .index("by_status_updatedAt", ["status", "updatedAt"])
     .index("by_updatedAt", ["updatedAt"]),
@@ -906,9 +908,20 @@ export default defineSchema({
     customerName: v.string(),
     gameItemId: v.optional(v.id("pokemonChampionsGameItems")),
     note: v.optional(v.string()),
+    offerSlug: v.optional(v.literal("premium-pass-starter")),
+    offerSnapshot: v.optional(v.any()),
     orderNumber: v.string(),
     pokemonId: v.optional(v.id("pokemonChampionsPokemon")),
+    promoCode: v.optional(v.literal("FIRST_ORDER_FREE_POKEMON")),
+    promoEligible: v.optional(v.boolean()),
+    promoSnapshot: v.optional(v.any()),
     quantity: v.number(),
+    source: v.optional(v.union(
+      v.literal("pokemon-card"),
+      v.literal("quick-order"),
+      v.literal("promo-banner"),
+      v.literal("premium-pass")
+    )),
     status: v.union(
       v.literal("new"),
       v.literal("contacted"),
@@ -934,6 +947,28 @@ export default defineSchema({
     instagramUrl: v.optional(v.string()),
     key: v.string(),
     orderInstructions: v.string(),
+    premiumPass: v.optional(v.object({
+      benefits: v.object({
+        storageDuration: v.literal("permanent"),
+        storageSlots: v.number(),
+        teammateTickets: v.number(),
+        trainingTickets: v.number(),
+      }),
+      ctaText: v.string(),
+      enabled: v.boolean(),
+      priceLabel: v.optional(v.string()),
+      subtitle: v.optional(v.string()),
+      title: v.string(),
+    })),
+    promoBanner: v.optional(v.object({
+      badge: v.optional(v.string()),
+      body: v.string(),
+      campaignCode: v.literal("FIRST_ORDER_FREE_POKEMON"),
+      ctaText: v.string(),
+      enabled: v.boolean(),
+      terms: v.optional(v.string()),
+      title: v.string(),
+    })),
     shopStatus: v.union(v.literal("open"), v.literal("paused")),
     themeColor: v.string(),
     updatedAt: v.number(),
