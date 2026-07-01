@@ -319,6 +319,13 @@ export default defineSchema({
     // SEO fields
     metaTitle: v.optional(v.string()),
     metaDescription: v.optional(v.string()),
+    focusKeyword: v.optional(v.string()),
+    relatedQueries: v.optional(v.array(v.string())),
+    tags: v.optional(v.array(v.string())),
+    faqItems: v.optional(v.array(v.object({
+      question: v.string(),
+      answer: v.string(),
+    }))),
     productType: v.optional(v.union(v.literal("physical"), v.literal("digital"))),
     productTypeId: v.optional(v.id("productTypes")), // Liên kết đến Loại sản phẩm (hệ thống Phân loại mới)
     digitalDeliveryType: v.optional(
@@ -619,6 +626,13 @@ export default defineSchema({
     // SEO fields
     metaTitle: v.optional(v.string()),
     metaDescription: v.optional(v.string()),
+    focusKeyword: v.optional(v.string()),
+    relatedQueries: v.optional(v.array(v.string())),
+    tags: v.optional(v.array(v.string())),
+    faqItems: v.optional(v.array(v.object({
+      question: v.string(),
+      answer: v.string(),
+    }))),
   })
     .index("by_slug", ["slug"])
     .index("by_category_status", ["categoryId", "status"])
@@ -742,6 +756,7 @@ export default defineSchema({
     active: v.boolean(),
     depth: v.number(),
     icon: v.optional(v.string()),
+    isSpecial: v.optional(v.boolean()),
     label: v.string(),
     menuId: v.id("menus"),
     openInNewTab: v.optional(v.boolean()),
@@ -942,6 +957,31 @@ export default defineSchema({
     .index("by_active_order", ["active", "order"])
     .index("by_order", ["order"]),
 
+  // 17q. miniGames - isolated HTML mini game portal
+  miniGames: defineTable({
+    active: v.boolean(),
+    config: v.object({
+      source: v.string(),
+      js: v.optional(v.string()),
+      css: v.optional(v.string()),
+      allowScripts: v.optional(v.boolean()),
+      allowForms: v.optional(v.boolean()),
+      allowPopups: v.optional(v.boolean()),
+    }),
+    order: v.number(),
+    title: v.string(),
+    slug: v.string(),
+    category: v.string(),
+    desc: v.optional(v.string()),
+    image: v.optional(v.string()),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_active_order", ["active", "order"]),
+
+  miniGameStats: defineTable({
+    key: v.string(),
+    count: v.number(),
+  }).index("by_key", ["key"]),
 
   // 17a. homeComponentSnapshots - Snapshot bộ homepage để tái sử dụng liên dự án
   homeComponentSnapshots: defineTable({
@@ -1364,6 +1404,13 @@ export default defineSchema({
     // SEO fields
     metaTitle: v.optional(v.string()),
     metaDescription: v.optional(v.string()),
+    focusKeyword: v.optional(v.string()),
+    relatedQueries: v.optional(v.array(v.string())),
+    tags: v.optional(v.array(v.string())),
+    faqItems: v.optional(v.array(v.object({
+      question: v.string(),
+      answer: v.string(),
+    }))),
   })
     .index("by_slug", ["slug"])
     .index("by_category_status", ["categoryId", "status"])
@@ -1437,6 +1484,13 @@ export default defineSchema({
     featured: v.optional(v.boolean()),
     metaTitle: v.optional(v.string()),
     metaDescription: v.optional(v.string()),
+    focusKeyword: v.optional(v.string()),
+    relatedQueries: v.optional(v.array(v.string())),
+    tags: v.optional(v.array(v.string())),
+    faqItems: v.optional(v.array(v.object({
+      question: v.string(),
+      answer: v.string(),
+    }))),
   })
     .index("by_slug", ["slug"])
     .index("by_category_status", ["categoryId", "status"])
@@ -1523,6 +1577,13 @@ export default defineSchema({
     lessonCount: v.number(),
     metaTitle: v.optional(v.string()),
     metaDescription: v.optional(v.string()),
+    focusKeyword: v.optional(v.string()),
+    relatedQueries: v.optional(v.array(v.string())),
+    tags: v.optional(v.array(v.string())),
+    faqItems: v.optional(v.array(v.object({
+      question: v.string(),
+      answer: v.string(),
+    }))),
   })
     .index("by_slug", ["slug"])
     .index("by_category_status", ["categoryId", "status"])
@@ -1672,6 +1733,13 @@ export default defineSchema({
     featured: v.optional(v.boolean()),
     metaTitle: v.optional(v.string()),
     metaDescription: v.optional(v.string()),
+    focusKeyword: v.optional(v.string()),
+    relatedQueries: v.optional(v.array(v.string())),
+    tags: v.optional(v.array(v.string())),
+    faqItems: v.optional(v.array(v.object({
+      question: v.string(),
+      answer: v.string(),
+    }))),
   })
     .index("by_slug", ["slug"])
     .index("by_category_status", ["categoryId", "status"])
@@ -1988,5 +2056,46 @@ export default defineSchema({
     .index("by_filter", ["filterId"])
     .index("by_resource_filter", ["resourceId", "filterId"])
     .index("by_resource_value", ["resourceId", "valueId"]),
+
+  // ============================================================
+  // CATALOGS
+  // ============================================================
+  catalogs: defineTable({
+    title: v.string(),
+    slug: v.string(),
+    description: v.optional(v.string()),
+
+    // PDF Storage (kế thừa từ Ca-Mau-DST-Digital-Library)
+    pdfStorageId: v.id("_storage"),
+    category: v.optional(v.string()),
+    pageImages: v.optional(v.array(
+      v.union(v.id("_storage"), v.null())
+    )),
+    totalPages: v.optional(v.number()),
+
+    // Display
+    thumbnail: v.optional(v.string()),
+    thumbnailStorageId: v.optional(v.union(v.id("_storage"), v.null())),
+
+    // Standard content module fields
+    status: v.union(
+      v.literal("Published"),
+      v.literal("Draft"),
+      v.literal("Archived")
+    ),
+    views: v.number(),
+    publishedAt: v.optional(v.number()),
+    order: v.number(),
+    featured: v.optional(v.boolean()),
+
+    // SEO
+    metaTitle: v.optional(v.string()),
+    metaDescription: v.optional(v.string()),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_status_order", ["status", "order"])
+    .index("by_status_publishedAt", ["status", "publishedAt"])
+    .index("by_status_featured", ["status", "featured"])
+    .searchIndex("search_title", { filterFields: ["status"], searchField: "title" }),
 });
 
